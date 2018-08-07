@@ -297,11 +297,18 @@ public class GamepadHandler extends Thread {
             mLeftStickCenterX = mLeftStickBgCenterX;
             mLeftStickCenterY = mLeftStickBgCenterY;
         } else {
-            int moveX = (int) (mJoyStickBgRadius * axisX);
-            mLeftStickCenterX = mLeftStickBgCenterX + moveX;
 
+            float scale = (float) Math.sqrt(Math.pow(axisX, 2) + Math.pow(axisY, 2));
+            int moveX = (int) (mJoyStickBgRadius * axisX);
             int moveY = (int) (mJoyStickBgRadius * axisY);
+            if (scale > 1) {
+                moveX = (int) (moveX / scale);
+                moveY = (int) (moveY / scale);
+            }
+
+            mLeftStickCenterX = mLeftStickBgCenterX + moveX;
             mLeftStickCenterY = mLeftStickBgCenterY + moveY;
+
         }
     }
 
@@ -310,10 +317,16 @@ public class GamepadHandler extends Thread {
             mRightStickCenterX = mRightStickBgCenterX;
             mRightStickCenterY = mRightStickBgCenterY;
         } else {
-            int moveX = (int) (mJoyStickBgRadius * axisX);
-            mRightStickCenterX = mRightStickBgCenterX + moveX;
 
+            float scale = (float) Math.sqrt(Math.pow(axisX, 2) + Math.pow(axisY, 2));
+            int moveX = (int) (mJoyStickBgRadius * axisX);
             int moveY = (int) (mJoyStickBgRadius * axisY);
+            if (scale > 1) {
+                moveX = (int) (moveX / scale);
+                moveY = (int) (moveY / scale);
+            }
+
+            mRightStickCenterX = mRightStickBgCenterX + moveX;
             mRightStickCenterY = mRightStickBgCenterY + moveY;
         }
     }
