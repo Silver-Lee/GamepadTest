@@ -50,12 +50,12 @@ public class GamepadHandler extends Thread {
     private String mLeftTriggerText = "LT";
     private int mLeftTriggerProgress;
     private int mLeftTriggerTextX, mLeftTriggerTextY;
-    private int mLeftTriggerCircleX, mLeftTriggerCircleY;
+    private int mLeftTriggerX, mLeftTriggerY;
 
     private String mRightTriggerText = "RT";
     private int mRightTriggerProgress;
     private int mRightTriggerTextX, mRightTriggerTextY;
-    private int mRightTriggerCircleX, mRightTriggerCircleY;
+    private int mRightTriggerX, mRightTriggerY;
 
     private int mBumperWidth, mBumperHeight;
 
@@ -131,8 +131,8 @@ public class GamepadHandler extends Thread {
 
         mCircleRadius = mScreenUtil.getDimenUnit(60, ScreenUtil.UNIT_DP);
         initJoyStickElement();
-        initTriggerElement();
         initBumperElement();
+        initTriggerElement();
         initDpadElement();
         initBtnPadElement();
         initCenterBtnElement();
@@ -144,12 +144,12 @@ public class GamepadHandler extends Thread {
         mThumbTextSize = mScreenUtil.getDimenUnit(16, ScreenUtil.UNIT_SP);
 
         mLeftStickBgCenterX = mScreenUtil.getScreenWidth() / 4;
-        mLeftStickBgCenterY = mScreenUtil.getScreenHeight() / 4 * 3;
+        mLeftStickBgCenterY = mScreenUtil.getScreenHeight() / 3 - 20;
         mLeftStickCenterX = mLeftStickBgCenterX;
         mLeftStickCenterY = mLeftStickBgCenterY;
 
         mRightStickBgCenterX = mScreenUtil.getScreenWidth() / 4 * 3;
-        mRightStickBgCenterY = mLeftStickBgCenterY;
+        mRightStickBgCenterY = mScreenUtil.getScreenHeight() / 4 * 3;
         mRightStickCenterX = mRightStickBgCenterX;
         mRightStickCenterY = mRightStickBgCenterY;
 
@@ -163,27 +163,6 @@ public class GamepadHandler extends Thread {
         mThumbRightTextWidth = bounds.width();
         mThumbRightTextHeight = bounds.height();
 
-    }
-
-    private void initTriggerElement() {
-
-        mTriggerCircleRadius = mScreenUtil.getDimenUnit(14, ScreenUtil.UNIT_DP);
-        mTriggerTextSize = mScreenUtil.getDimenUnit(13, ScreenUtil.UNIT_SP);
-        mStrokePaint.setTextSize(mTriggerTextSize);
-
-        mLeftTriggerCircleX = mScreenUtil.getDimenUnit(15, ScreenUtil.UNIT_DP) + mTriggerCircleRadius;
-        mLeftTriggerCircleY = mScreenUtil.getScreenHeight() / 2;
-
-        float ltTextWidth = mStrokePaint.measureText(mLeftTriggerText);
-        mLeftTriggerTextX = (int) (mLeftTriggerCircleX - mTriggerCircleRadius + ltTextWidth / 2);
-        mLeftTriggerTextY = mLeftTriggerCircleY + (mTriggerCircleRadius / 3);
-
-        mRightTriggerCircleX = mScreenUtil.getScreenWidth() - mScreenUtil.getDimenUnit(15, ScreenUtil.UNIT_DP) - mTriggerCircleRadius;
-        mRightTriggerCircleY = mLeftTriggerCircleY;
-
-        float rtTextWidth = mStrokePaint.measureText(mRightTriggerText);
-        mRightTriggerTextX = (int) (mRightTriggerCircleX - rtTextWidth / 2);
-        mRightTriggerTextY = mLeftTriggerTextY;
     }
 
     private void initBumperElement() {
@@ -207,9 +186,31 @@ public class GamepadHandler extends Thread {
 
     }
 
+    private void initTriggerElement() {
+
+        mTriggerCircleRadius = mScreenUtil.getDimenUnit(14, ScreenUtil.UNIT_DP);
+        mTriggerTextSize = mScreenUtil.getDimenUnit(13, ScreenUtil.UNIT_SP);
+        mStrokePaint.setTextSize(mTriggerTextSize);
+
+        mLeftTriggerX = mLeftBumperX;
+//        mLeftTriggerY = mScreenUtil.getScreenHeight() / 2;
+        mLeftTriggerY = mLeftBumperY + mBumperHeight + 20;
+
+        float ltTextWidth = mStrokePaint.measureText(mLeftTriggerText);
+        mLeftTriggerTextX = (int) (mLeftTriggerX + mBumperWidth / 2 - ltTextWidth / 2);
+        mLeftTriggerTextY = mLeftTriggerY + mBumperHeight / 2 + mBumperHeight / 2 / 3;
+
+        mRightTriggerX = mRightBumperX;
+        mRightTriggerY = mLeftTriggerY;
+
+        float rtTextWidth = mStrokePaint.measureText(mRightTriggerText);
+        mRightTriggerTextX = (int) (mRightTriggerX + mBumperWidth / 2 - rtTextWidth / 2);
+        mRightTriggerTextY = mLeftTriggerTextY;
+    }
+
     private void initDpadElement() {
         mDpadCenterX = mScreenUtil.getScreenWidth() / 4;
-        mDpadCenterY = mScreenUtil.getScreenHeight() / 3;
+        mDpadCenterY = mScreenUtil.getScreenHeight() / 4 * 3 - 20;
     }
 
     private void initBtnPadElement() {
@@ -259,7 +260,7 @@ public class GamepadHandler extends Thread {
         mFillPaint.getTextBounds(mBtnSelectText, 0, mBtnSelectText.length(), rect);
 
         mBtnSelectX = mScreenUtil.getScreenWidth() / 2 - mCenterBtnWidth - mScreenUtil.getDimenUnit(20, ScreenUtil.UNIT_DP);
-        mBtnSelectY = mDpadCenterY - mCenterBtnHeight / 2;
+        mBtnSelectY = mButtonPadY - mCenterBtnHeight / 2;
 
         mBtnSelectTextX = mBtnSelectX + mCenterBtnWidth / 2 - rect.width() / 2;
         mBtnSelectTextY = mBtnSelectY - rect.height();
@@ -403,14 +404,22 @@ public class GamepadHandler extends Thread {
 
         canvas.drawLine(startX, startY, stopX, stopY, mFillPaint);
 
+        RectF rect = new RectF(mLeftTriggerX, mLeftTriggerY, mLeftTriggerX + mBumperWidth, mLeftTriggerY + mBumperHeight);
+
         /* draw text circle */
         mFillPaint.setColor(mButtonColorMap.get(KEY_LEFT_TRIGGER, mGenericNormalColor));
-        canvas.drawCircle(mLeftTriggerCircleX, mLeftTriggerCircleY, mTriggerCircleRadius, mFillPaint);
-        canvas.drawCircle(mLeftTriggerCircleX, mLeftTriggerCircleY, mTriggerCircleRadius, mStrokePaint);
+        canvas.drawRoundRect(rect, 20, 20, mFillPaint);
+        canvas.drawRoundRect(rect, 20, 20, mStrokePaint);
+//        canvas.drawCircle(mLeftTriggerX, mLeftTriggerY, mTriggerCircleRadius, mFillPaint);
+//        canvas.drawCircle(mLeftTriggerX, mLeftTriggerY, mTriggerCircleRadius, mStrokePaint);
 
+        rect.left = mRightTriggerX;
+        rect.right = mRightTriggerX + mBumperWidth;
         mFillPaint.setColor(mButtonColorMap.get(KEY_RIGHT_TRIGGER, mGenericNormalColor));
-        canvas.drawCircle(mRightTriggerCircleX, mRightTriggerCircleY, mTriggerCircleRadius, mFillPaint);
-        canvas.drawCircle(mRightTriggerCircleX, mRightTriggerCircleY, mTriggerCircleRadius, mStrokePaint);
+        canvas.drawRoundRect(rect, 20, 20, mFillPaint);
+        canvas.drawRoundRect(rect, 20, 20, mStrokePaint);
+//        canvas.drawCircle(mRightTriggerX, mRightTriggerY, mTriggerCircleRadius, mFillPaint);
+//        canvas.drawCircle(mRightTriggerX, mRightTriggerY, mTriggerCircleRadius, mStrokePaint);
 
         mStrokePaint.setTextSize(mTriggerTextSize);
         canvas.drawText(mLeftTriggerText, mLeftTriggerTextX, mLeftTriggerTextY, mStrokePaint);
