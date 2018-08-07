@@ -193,7 +193,6 @@ public class GamepadHandler extends Thread {
         mStrokePaint.setTextSize(mTriggerTextSize);
 
         mLeftTriggerX = mLeftBumperX;
-//        mLeftTriggerY = mScreenUtil.getScreenHeight() / 2;
         mLeftTriggerY = mLeftBumperY + mBumperHeight + 20;
 
         float ltTextWidth = mStrokePaint.measureText(mLeftTriggerText);
@@ -416,6 +415,19 @@ public class GamepadHandler extends Thread {
         stopY = mScreenUtil.getScreenHeight() - mRightTriggerProgress;
 
         canvas.drawLine(startX, startY, stopX, stopY, mFillPaint);
+
+        mFillPaint.setColor(Color.BLACK);
+        mFillPaint.setStrokeWidth(2);
+        canvas.drawLine(0,
+                mScreenUtil.getScreenHeight()/2,
+                mScreenUtil.getDimenUnit(10, ScreenUtil.UNIT_DP),
+                mScreenUtil.getScreenHeight()/2,
+                mFillPaint);
+        canvas.drawLine(mScreenUtil.getScreenWidth() - mScreenUtil.getDimenUnit(10, ScreenUtil.UNIT_DP),
+                mScreenUtil.getScreenHeight()/2,
+                mScreenUtil.getScreenWidth(),
+                mScreenUtil.getScreenHeight()/2,
+                mFillPaint);
 
         RectF rect = new RectF(mLeftTriggerX, mLeftTriggerY, mLeftTriggerX + mBumperWidth, mLeftTriggerY + mBumperHeight);
 
